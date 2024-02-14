@@ -1,151 +1,153 @@
+<template>
+    <h1>Login</h1>
+
+    <form action="/login" method="post">
+        <fieldset class="login-form">
+            <legend>Connexion</legend>
+            <div>
+              <label for="username">Username:</label>
+              <input v-model="username" id="username" type="text" name="username" placeholder="John" @blur="validateUsername" required>
+              <p id="username-error" class="error-message" v-if="usernameError">{{ usernameError }}</p>
+            </div>
+            <div>
+              <label for="email">Email :</label>
+              <input v-model="email" id="email" type="email" name="email" placeholder="John@email.com" @blur="validateEmail" required>
+              <p id="email-error" class="error-message" v-if="emailError">{{ emailError }}</p>
+            </div>
+            <div>
+              <label for="password">Password :</label>
+              <input v-model="password" id="password" type="password" name="password" placeholder="**********" @blur="validatePassword" required>
+              <p id="password-error" class="error-message" v-if="passwordError">{{ passwordError }}</p>
+            </div>
+            <div>
+              <label for="confirm-password">Confirm Password :</label>
+              <input v-model="confirmPassword" id="confirm-password" type="password" name="confirm-password" placeholder="**********" @blur="validateConfirmPassword" required>
+              <p id="confirm-password-error" class="error-message" v-if="confirmPasswordError">{{ confirmPasswordError }}</p>
+            </div>
+            <p v-if="formSubmitted" class="success-message">All Good!</p>
+        </fieldset>
+        <div>
+        <button :disabled="isDisabled" type="submit">Register</button>
+        </div>
+    </form>
+</template>
+
+
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 
 const usernameInput = ref(null);
 const emailInput = ref(null);
 const passwordInput = ref(null);
 const confirmPasswordInput = ref(null);
 
+const username = ref('');
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
 
+const usernameError = ref('');
+const emailError = ref('');
+const passwordError = ref('');
+const confirmPasswordError = ref('');
+
+const formSubmitted = ref(false);
 
 const validateUsername = () => {
-    const usernameError = document.getElementById("username-error");
-    const usernameValue = usernameInput.value.value;
+    nextTick(() => {
+        const usernameValue = username.value.trim();
 
-    // Check if the username has no spaces and is at least 6 characters long
-    if (/\s/.test(usernameValue) || usernameValue.length < 4) {
-        usernameError.textContent = 'Username must be at least 4 characters long and cannot contain spaces.';
-    } else {
-        usernameError.textContent = '';
-    }
-};
-
-const validatePassword = () => {
-    const passwordError = document.getElementById("password-error");
-    const passwordValue = passwordInput.value.value;
-
-
-    // Check if the password meets the requirements
-    if (
-        passwordValue.length < 8 ||
-        !/[A-Z]/.test(passwordValue) || // At least one uppercase letter
-        !/[a-z]/.test(passwordValue) || // At least one lowercase letter
-        !/\d/.test(passwordValue) ||    // At least one digit
-        !/[^A-Za-z0-9]/.test(passwordValue) // At least one special character
-    ) {
-        passwordInput.value.parentElement.querySelector('.error-message').innerHTML = 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.';
-    } else {
-        passwordError.textContent = "";
-    }
-};
-
-const validateConfirmPassword = () => {
-    const confirmPasswordError = document.getElementById("confirm-password-error");
-    const confirmPasswordValue = confirmPasswordInput.value.value;
-    const passwordValue = passwordInput.value.value;
-
-    // Check if the confirm password matches the password
-    if (confirmPasswordValue !== passwordValue) {
-        confirmPasswordError.textContent = 'Passwords do not match.';
-    } else {
-        confirmPasswordError.textContent = '';
-    }
+        if (/\s/.test(usernameValue) || usernameValue.length < 4) {
+            usernameError.value = 'Username must be at least 4 characters long and cannot contain spaces.';
+        } else {
+            usernameError.value = '';
+        }
+    });
 };
 
 const validateEmail = () => {
-    const emailError = document.getElementById("email-error");
-    const trimmedEmail = emailInput.value.value.trim();
-    if (!isValidEmail(trimmedEmail)) {
-        emailInput.value.parentElement.querySelector('.error-message').innerHTML = 'That ain\'t an email';
+    nextTick(() => {
+        const trimmedEmail = email.value.trim();
+        if (!isValidEmail(trimmedEmail)) {
+            emailError.value = 'Invalid email format.';
+        } else {
+            emailError.value = '';
+        }
+    });
+};
+
+const validatePassword = () => {
+    nextTick(() => {
+        const passwordValue = password.value;
+
+        if (
+            passwordValue.length < 8 ||
+            !/[A-Z]/.test(passwordValue) ||
+            !/[a-z]/.test(passwordValue) ||
+            !/\d/.test(passwordValue) ||
+            !/[^A-Za-z0-9]/.test(passwordValue)
+        ) {
+            passwordError.value = 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.';
+        } else {
+            passwordError.value = '';
+        }
+    });
+};
+
+const validateConfirmPassword = () => {
+  nextTick(() => {
+    const confirmPasswordValue = confirmPassword.value;
+    const passwordValue = password.value;
+  
+    if (confirmPasswordValue !== passwordValue) {
+      confirmPasswordError.value = 'Passwords do not match.';
     } else {
-        emailError.textContent = "";
+      confirmPasswordError.value = '';
+      formSubmitted.value = true;
     }
+  });
 };
 
 const isValidEmail = (email) => {
-    if (!email || typeof email !== 'string') {
-        return false; // handle empty or non-string inputs
-    }
-
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
     return emailRegex.test(email);
 };
 
-
+const isDisabled = computed(() => {
+    return (
+        usernameError.value !== '' ||
+        emailError.value !== '' ||
+        passwordError.value !== '' ||
+        confirmPasswordError.value !== '' ||
+        !username.value ||
+        !email.value ||
+        !password.value ||
+        !confirmPassword.value
+    );
+});
 
 onMounted(() => {
     usernameInput.value.addEventListener('blur', validateUsername);
-    passwordInput.value.addEventListener('blur', validatePassword);
     emailInput.value.addEventListener('blur', validateEmail);
+    passwordInput.value.addEventListener('blur', validatePassword);
     confirmPasswordInput.value.addEventListener('blur', validateConfirmPassword);
 
     document.querySelector('form').addEventListener('submit', (event) => {
-        if (!validatePassword()) {
-            event.preventDefault(); // Cancel form submission if password validation fails
+        validateUsername();
+        validateEmail();
+        validatePassword();
+        validateConfirmPassword();
+
+        if (usernameError.value || emailError.value || passwordError.value || confirmPasswordError.value) {
+            event.preventDefault();
         }
+        else formSubmitted.value = true;
     });
 });
-
 </script>
 
-<template>
-    <h1>Login</h1>
-
-    <form action="/login" @submit.prevent="" method="post">
-        <fieldset class="login-form">
-            <legend>Connexion</legend>
-              <div>
-                <label for="username">Username:</label>
-                <input ref="usernameInput" id="username" type="text" name="username" placeholder="John" required>
-                <p id="username-error" class="error-message"></p>
-            </div>
-            <div>
-                <label for="email">Email :</label>
-                <input ref="emailInput" id="email" type="email" name="email" placeholder="John@email.com" required>
-                <p id="email-error" class="error-message"></p>
-            </div>
-            <div>
-                <label for="password">Password :</label>
-                <input ref="passwordInput" id="password" type="password" name="password" placeholder="**********" required>
-                <p id="password-error" class="error-message"></p>
-            </div>
-            <div>
-                <label for="confirm-password">Password :</label>
-                <input ref="confirmPasswordInput" id="confirm-password" type="password" name="confirm-password" placeholder="**********" required>
-                <p id="confirm-password-error" class="error-message"></p>
-            </div>
-        </fieldset>
-        <div>
-            <button type="submit">Se connecter</button>
-        </div>
-    </form>
-</template>
 
 <style>
-:root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-}
-
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
@@ -159,14 +161,14 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #646cff;
+    background-color:cadetblue;
     cursor: pointer;
     transition: border-color 0.25s;
     margin: 2rem;
 }
 
 button:hover {
-    border-color: #131764;
+    background-color:darkcyan;
 }
 
 button:focus,
@@ -177,7 +179,7 @@ button:focus-visible {
 
 .login-form {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     margin: auto;
 }
 
@@ -193,4 +195,10 @@ button:focus-visible {
     border: none;
 }
 
+.error-message {
+    color:crimson;
+}
+.success-message {
+    color:darkseagreen;
+}
 </style>

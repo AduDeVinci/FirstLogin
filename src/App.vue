@@ -32,10 +32,6 @@ body {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
 
 #app {
   max-width: 1280px;
@@ -45,25 +41,6 @@ h1 {
   justify-content: center;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #646cff;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  margin: 2rem;
-}
-button:hover {
-  border-color: #131764;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -78,24 +55,6 @@ button:focus-visible {
   }
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
-  max-width: 300px;
-  margin: auto;
-}
-
-.login-form label {
-  margin-bottom: 5px;
-  align-self:flex-start;
-}
-
-.login-form input {
-  margin-bottom: 10px;
-  padding: 5px;
-  border-radius: 5px;
-  border: none;
-}
 
 
 

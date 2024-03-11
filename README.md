@@ -1,5 +1,6 @@
 # FirstLogin-project
-# Auriane Dupin - auriane.dupin@edu.devinci.fr
+
+Auriane Dupin - auriane.dupin@edu.devinci.fr
 
 This template should help get you started developing with Vue 3 in Vite.
 

@@ -1,10 +1,10 @@
 <script setup>
-import Login from './components/LoginPage.vue'
+import Login from './views/LoginPage.vue'
 
 </script>
 
 <template>
-    <Login />
+    <Login/>
 
 </template>
 
@@ -58,4 +58,4 @@ body {
 
 
 
-</style>
+</style>./views/LoginPage.vue
